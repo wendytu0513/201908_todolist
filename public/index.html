@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/jquery.toast.css">
+    <style>
+        section {
+            margin-top: 20px;
+            border-bottom: 1px solid #79c4fc;
+        }
+
+        section>button {
+            width: 20%;
+            border: none;
+            background-color: #c2e4ff;
+            padding: 10px;
+            margin-right: 5px;
+            transition: all 0.3s;
+        }
+
+        .active {
+            background-color: #79c4fc;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4" id=app>
+                <h2>待辦事項</h2><br>
+                <div id=hearder>
+                    <input type="text" placeholder="add..." v-model="newlist" v-on:key.enter="addlist">
+                    <button v-on:click="addlist"><span class="glyphicon glyphicon-plus"
+                            aria-hidden="true"></span></button>
+                </div>
+
+                <section>
+                    <button v-bind:class="{'active': visibility=='all'}" v-on:click="visibility='all'">全部</button>
+                    <button v-bind:class="{'active': visibility=='doing'}" v-on:click="visibility='doing'">進行中</button>
+                    <button v-bind:class="{'active': visibility=='done'}" v-on:click="visibility='done'">已完成</button>
+                </section><br>
+
+                <ul id="latestlist" class="list-group">
+
+                    <li v-for="(todoitem, key) in filtertodos" v-for="todoitem,index in todolist"
+                        class="list-group-item">
+
+                        <input type="checkbox" v-model="todoitem.completed" v-bind:id="todoitem.id">
+                        <label v-bind:for="todoitem.id"
+                            v-bind:class="{'completed':todoitem.completed}">{{ todoitem.title }}</label>
+
+                        <span class="pull-right">
+                            <button v-on:click="editlist(todo)" class="btn btn-info btn-xs editItem"><span
+                                    class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>&nbsp;
+                            <button v-on:click="deletelist(todo)" class="btn btn-danger btn-xs deleteItem"><span
+                                    class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/jquery.toast.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                newtodo: "",
+                todolist: [
+                    { id: "111", title: "繳電費", completed: false },
+                    { id: "222", title: "聚餐", completed: true }
+                ],
+                cachetodo: {},
+                cachetitle: "",
+                visibility: "all",
+                clear: ""
+            },
+            methods: {
+                addlist: function () {
+                    var value = this.newlist.trim();
+                    var id = Math.floor(Date.now());
+                    if (!value) {
+                        return;
+                    }
+                    this.todolist.push({
+                        id: id,
+                        title: value,
+                        completed: false
+                    });
+                    //this.newlist = "";
+                },
+
+                deletelist: function (todo) {
+                    this.todolist.splice(todo, 1);
+                }
+            },
+
+            computed: {
+                // filtertodos: function () {
+                //     if (this.visibility == 'all') {
+                //         return this.todolist;
+                //     } else if (this.visibility == 'doing') {
+                //         var newlist = [];
+                //         this.todolist.forEach(function (todoitem) {
+                //             if (!todoitem.completed) {
+                //                 newlist.push(todoitem);
+                //             }
+                //         });
+                //         return newlist;
+                //     } else {
+                //         var newlist = [];
+                //         this.todolist.forEach(function (todoitem) {
+                //             if (todoitem.completed) {
+                //                 newlist.push(todoitem);
+                //             }
+                //         });
+                //         return newlist;
+                //     }
+
+
+
+                filtertodos: function () {
+                    var newlist = [];
+                    if (this.visibility == 'all') {
+                        newlist = this.todolist;
+                    } else if (this.visibility == 'doing') {
+                        this.todolist.forEach(function (todoitem) {
+                            if (!todoitem.completed) {
+                                newlist.push(todoitem);
+                            }
+                        });
+                    } else {
+                        this.todolist.forEach(function (todoitem) {
+                            if (todoitem.completed) {
+                                newlist.push(todoitem);
+                            }
+                        });
+                    }
+                    return newlist;
+                }
+
+
+
+
+
+            }
+
+        })
+
+
+
+    </script>
+
+
+
+
+</body>
+
+</html>
